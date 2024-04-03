@@ -6,3 +6,4 @@ tmp
 htmlcov/*
 *.swp
 .mypy_cache/
+.idea/
