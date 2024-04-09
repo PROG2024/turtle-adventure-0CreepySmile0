@@ -356,26 +356,38 @@ class HomingEnemy(Enemy):
             self.__ystate = self.moving_down
 
     def moving_right(self):
-        self.x += self.__speed * math.cos(
-            math.atan(abs(self.game.player.y - self.y) / abs(self.game.player.x - self.x)))
+        if self.game.player.x - self.x == 0:
+            self.x += 0
+        else:
+            self.x += self.__speed * math.cos(
+                math.atan(abs(self.game.player.y - self.y) / abs(self.game.player.x - self.x)))
         if self.game.player.x <= self.x:
             self.__xstate = self.moving_left
 
     def moving_left(self):
-        self.x -= self.__speed * math.cos(
-            math.atan(abs(self.game.player.y - self.y) / abs(self.game.player.x - self.x)))
+        if self.game.player.x - self.x == 0:
+            self.x += 0
+        else:
+            self.x -= self.__speed * math.cos(
+                math.atan(abs(self.game.player.y - self.y) / abs(self.game.player.x - self.x)))
         if self.game.player.x >= self.x:
             self.__xstate = self.moving_right
 
     def moving_down(self):
-        self.y += self.__speed * math.sin(
-            math.atan(abs(self.game.player.y - self.y) / abs(self.game.player.x - self.x)))
+        if self.game.player.x - self.x == 0:
+            self.y += self.__speed
+        else:
+            self.y += self.__speed * math.sin(
+                math.atan(abs(self.game.player.y - self.y) / abs(self.game.player.x - self.x)))
         if self.game.player.y <= self.y:
             self.__ystate = self.moving_up
 
     def moving_up(self):
-        self.y -= self.__speed * math.sin(
-            math.atan(abs(self.game.player.y - self.y) / abs(self.game.player.x - self.x)))
+        if self.game.player.x - self.x == 0:
+            self.y -= self.__speed
+        else:
+            self.y -= self.__speed * math.sin(
+                math.atan(abs(self.game.player.y - self.y) / abs(self.game.player.x - self.x)))
         if self.game.player.y >= self.y:
             self.__ystate = self.moving_down
 
@@ -469,10 +481,16 @@ class Bullet(Enemy):
                  speed: float,
                  coordinate: tuple):
         super().__init__(game, size, color)
-        self.__xspeed = speed * math.cos(
-            math.atan(abs(self.game.player.y - coordinate[1]) / abs(self.game.player.x - coordinate[0])))
-        self.__yspeed = speed * math.sin(
-            math.atan(abs(self.game.player.y - coordinate[1]) / abs(self.game.player.x - coordinate[0])))
+        if self.game.player.x - coordinate[0] == 0:
+            self.__yspeed = speed
+            self.__xspeed = 0
+        else:
+            self.__yspeed = speed * math.sin(
+                math.atan(abs(self.game.player.y - coordinate[1]) /
+                          abs(self.game.player.x - coordinate[0])))
+            self.__xspeed = speed * math.cos(
+                math.atan(abs(self.game.player.y - coordinate[1]) /
+                          abs(self.game.player.x - coordinate[0])))
         if coordinate[0] >= self.game.player.x:
             self.__xspeed = -self.__xspeed
         else:
@@ -605,9 +623,9 @@ class EnemyGenerator:
             enemy.y = self.game.home.y - enemy.multiplier
         else:
             while True:
-                tempx = random.randrange(0, self.game.winfo_width())
-                tempy = random.randrange(0, self.game.winfo_height())
-                if (not self.safe_area(tempx, tempy) and (not self.home_area(tempx, tempy))):
+                tempx = random.randrange(0+int(enemy.size/2), self.game.winfo_width()-int(enemy.size/2))
+                tempy = random.randrange(0+int(enemy.size/2), self.game.winfo_height()-int(enemy.size/2))
+                if not self.safe_area(tempx, tempy) and (not self.home_area(tempx, tempy)):
                     break
             enemy.x = tempx
             enemy.y = tempy
