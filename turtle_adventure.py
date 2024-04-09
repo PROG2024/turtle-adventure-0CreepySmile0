@@ -248,12 +248,6 @@ class Enemy(TurtleGameElement):
         )
 
 
-# TODO
-# * Define your enemy classes
-# * Implement all methods required by the GameElement abstract class
-# * Define enemy's update logic in the update() method
-# * Check whether the player hits this enemy, then call the
-#   self.game.game_over_lose() method in the TurtleAdventureGame class.
 class RandomMovingEnemy(Enemy):
     def __init__(self,
                  game: "TurtleAdventureGame",
@@ -414,7 +408,7 @@ class CampingEnemy(Enemy):
         super().__init__(game, size, color)
         self.__speed = speed
         self.__state = self.moving_right
-        self.__multiplier = (self.game.home.size/2)*3
+        self.__multiplier = (self.game.home.size/2)*5
 
     @property
     def multiplier(self):
@@ -557,15 +551,6 @@ class Turret(Enemy):
         pass
 
 
-
-# TODO
-# Complete the EnemyGenerator class by inserting code to generate enemies
-# based on the given game level; call TurtleAdventureGame's add_enemy() method
-# to add enemies to the game at certain points in time.
-#
-# Hint: the 'game' parameter is a tkinter's frame, so it's after()
-# method can be used to schedule some future events.
-
 class EnemyGenerator:
     """
     An EnemyGenerator instance is responsible for creating enemies of various
@@ -583,8 +568,7 @@ class EnemyGenerator:
                           BouncingEnemy,
                           Turret]
         self.initial_enemies()
-        self.__game.after(random.randrange(int(2e3/self.level), int(4e3/self.level)),
-                          self.spawn_more)
+        self.__game.after(random.randrange(int(0.5e3), int(1e3)), self.spawn_more)
 
     @property
     def game(self) -> "TurtleAdventureGame":
@@ -630,13 +614,14 @@ class EnemyGenerator:
         self.game.add_element(enemy)
 
     def initial_enemies(self):
-        for _ in range(self.level*5):
-            self.create_enemy()
+        for _ in range(self.level):
+            for enemy_type in self.__enemies:
+                self.create_enemy(enemy_type)
 
     def spawn_more(self):
         for _ in range(int(self.level*1.5)+1):
             self.create_enemy()
-        self.__game.after(random.randrange(int(2e3), int(4e3)), self.spawn_more)
+        self.__game.after(random.randrange(int(1e3), int(1.5e3)), self.spawn_more)
 
 
 class TurtleAdventureGame(Game): # pylint: disable=too-many-ancestors
